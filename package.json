@@ -1,6 +1,6 @@
 {
   "name": "nacl-encrypt",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Encrypt/Decrypt your data with zero headache",
   "main": "index.js",
   "scripts": {
