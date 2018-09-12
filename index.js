@@ -14,12 +14,13 @@ const newNonce = () => randomBytes(secretbox.nonceLength);
 
 exports.generateKey = () => encodeBase64(randomBytes(secretbox.keyLength));
 
-exports.encrypt = (message) => {
-  if (!key) {
-    throw new Error('Couldn\'t find any secret token. Make sure SECRET_KEY is present in ENV 🙁');
+exports.encrypt = (message, secret) => {
+  secret = secret || key;
+  if (!secret) {
+    throw new Error('Couldn\'t find any secret token. Make sure you passed it or SECRET_KEY is present in ENV 🙁');
   }
 
-  const keyUint8Array = decodeBase64(key);
+  const keyUint8Array = decodeBase64(secret);
   const nonce = newNonce();
   const messageUint8 = decodeUTF8(message);
   const box = secretbox(messageUint8, nonce, keyUint8Array);
@@ -32,12 +33,13 @@ exports.encrypt = (message) => {
   return base64FullMessage;
 };
 
-exports.decrypt = (messageWithNonce) => {
-  if (!key) {
-    throw new Error('Couldn\'t find any secret token. Make sure SECRET_KEY is present in ENV 🙁');
+exports.decrypt = (messageWithNonce, secret) => {
+  secret = secret || key;
+  if (!secret) {
+    throw new Error('Couldn\'t find any secret token. Make sure you passed it or SECRET_KEY is present in ENV 🙁');
   }
 
-  const keyUint8Array = decodeBase64(key);
+  const keyUint8Array = decodeBase64(secret);
   const messageWithNonceAsUint8Array = decodeBase64(messageWithNonce);
   const nonce = messageWithNonceAsUint8Array.slice(0, secretbox.nonceLength);
   const message = messageWithNonceAsUint8Array.slice(
@@ -52,5 +54,5 @@ exports.decrypt = (messageWithNonce) => {
   }
 
   const base64DecryptedMessage = encodeUTF8(decrypted);
-  return [base64DecryptedMessage, false];
+  return base64DecryptedMessage;
 };
